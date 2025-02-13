@@ -6,17 +6,18 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use App\Models\ChatHistory;
 use Ramsey\Uuid\Uuid;
+use Illuminate\Support\Str;
 
 class ChatbotController extends Controller
 {
     public function chat(Request $request)
     {
         // Kollar om användaren är inloggad
-        $user = $request->user();
+        $user = $request->user('sanctum');
     
-        // Om användaren är inloggad och har en session_id, använd den. Annars generera en ny session_id.
-        $session_id = $request->session_id ?? ($user ? (string) Uuid::uuid4() : (string) Uuid::uuid4());
-    
+        // Om användaren är inloggad och har en session_id, används den. Annars genereras en ny session_id.
+        $session_id = Str::isUuid($request->session_id) ? $request->session_id : (string) Uuid::uuid4();
+
         // Hämtar tidigare chattmeddelanden om användaren är inloggad och har en session_id
         $previousMessages = [];
         if ($user && $session_id) {
@@ -55,7 +56,9 @@ class ChatbotController extends Controller
                 'bot_response' => $botReply
             ]);
         }
-    
+
+        if (!$user) return response()->json(['message' => $botReply]);
+
         return response()->json([
             'session_id' => $session_id,
             'message' => $botReply
