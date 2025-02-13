@@ -44,7 +44,9 @@ class AuthController extends Controller
             ]);
         }
 
-            return response()->json(['token' => $user->createToken('API Token')->plainTextToken]);
+        $token = $user->createToken('accessToken');
+
+            return response()->json(['accessToken' => $token->plainTextToken], 200);
         } catch(\Exception $e) {
             return response()->json(['message' => $e->getMessage()], 401);
         }
