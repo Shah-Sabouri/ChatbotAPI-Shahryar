@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('chat_histories', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->uuid('session_id');
+            $table->uuid('session_id')->nullable();
             $table->text('user_message');
             $table->text('bot_response');
             $table->timestamps();

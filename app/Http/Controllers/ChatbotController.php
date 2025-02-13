@@ -13,9 +13,11 @@ class ChatbotController extends Controller
     {
         // Kollar om användaren är inloggad
         $user = $request->user();
-        $session_id = $request->session_id ?? ($user ? (string) Uuid::uuid4() : null);
-
-        // Hämtar tidigare chattmeddelanden om en session finns
+    
+        // Om användaren är inloggad och har en session_id, använd den. Annars generera en ny session_id.
+        $session_id = $request->session_id ?? ($user ? (string) Uuid::uuid4() : (string) Uuid::uuid4());
+    
+        // Hämtar tidigare chattmeddelanden om användaren är inloggad och har en session_id
         $previousMessages = [];
         if ($user && $session_id) {
             $previousMessages = ChatHistory::where('user_id', $user->id)
@@ -29,21 +31,21 @@ class ChatbotController extends Controller
                 ->flatten(1)
                 ->toArray();
         }
-
+    
         // Lägger till det nya meddelandet
         $messages = array_merge($previousMessages, [
             ['role' => 'user', 'content' => $request->message]
         ]);
-
+    
         // Skickar förfrågan till LLM
         $response = Http::post('http://localhost:11434/api/chat', [
             'model' => 'mistral',
             'messages' => $messages,
             'stream' => false
         ]);
-
+    
         $botReply = $response->json()['message']["content"] ?? 'Jag kunde inte förstå din fråga.';
-
+    
         // Sparar chatt-historik om användaren är inloggad
         if ($user) {
             ChatHistory::create([
@@ -53,11 +55,11 @@ class ChatbotController extends Controller
                 'bot_response' => $botReply
             ]);
         }
-
+    
         return response()->json([
             'session_id' => $session_id,
             'message' => $botReply
         ]);
-    }
-}
+    }    
+}    
 

@@ -12,4 +12,4 @@ Route::get('/user', function (Request $request) {
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
-Route::middleware('auth:sanctum')->post('/chat', [ChatbotController::class, 'chat']);
+Route::post('/chat', [ChatbotController::class, 'chat']);
