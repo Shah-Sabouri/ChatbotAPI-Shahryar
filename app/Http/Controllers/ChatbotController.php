@@ -42,7 +42,7 @@ class ChatbotController extends Controller
             'stream' => false
         ]);
 
-        $botReply = $response->json()['message'] ?? 'Jag kunde inte förstå din fråga.';
+        $botReply = $response->json()['message']["content"] ?? 'Jag kunde inte förstå din fråga.';
 
         // Sparar chatt-historik om användaren är inloggad
         if ($user) {
