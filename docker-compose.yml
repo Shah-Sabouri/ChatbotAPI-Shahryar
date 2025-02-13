@@ -2,7 +2,7 @@ services:
   mariadb:
     image: mariadb:latest
     restart: always
-    ennvironment:
+    environment:
       MARIADB_ROOT_PASSWORD: mariadb
       MYSQL_USER: mariadb
       MYSQL_PASSWORD: mariadb
@@ -17,6 +17,6 @@ services:
     restart: always
     ports:
       - 8080:8080
-      
+
 volumes:
   mariadb_data:
